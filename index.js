@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -55,6 +55,28 @@ async function run() {
       const query = { TaskUserEmail: email };
       const result = await AllUserTasksCollection.find(query).toArray();
       console.log(result);
+      res.send(result);
+    });
+    app.patch("/userTaskOngoing/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          OngoingTask: "true",
+        },
+      };
+      const result = await AllUserTasksCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+    app.patch("/userTaskComplete/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          CompleteTaskStatus: "true",
+        },
+      };
+      const result = await AllUserTasksCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
     // =================================================================
